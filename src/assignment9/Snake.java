@@ -1,6 +1,7 @@
 package assignment9;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Snake {
 
@@ -11,9 +12,12 @@ public class Snake {
 	private double deltaY;
 	
 	public Snake() {
-		//FIXME - set up the segments instance variable
 		deltaX = 0;
 		deltaY = 0;
+		segments = new LinkedList<BodySegment>();
+		segments.add(new BodySegment(0.5, 0.5, SEGMENT_SIZE));
+		
+		
 	}
 	
 	public void changeDirection(int direction) {
@@ -36,15 +40,25 @@ public class Snake {
 	 * Moves the snake by updating the position of each of the segments
 	 * based on the current direction of travel
 	 */
+
 	public void move() {
-		//FIXME
-	}
+		for (int i = (segments.size() - 1); i > 0; i--) {
+			segments.get(i).setX(segments.get(i-1).getX());
+			segments.get(i).setY(segments.get(i-1).getY());
+		}
+		
+		segments.get(0).setX(deltaX + segments.get(0).getX());
+		segments.get(0).setY(deltaY + segments.get(0).getY());	
+		}
+	
 	
 	/**
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
-		//FIXME
+		for(int i = 0; i < segments.size(); i++) {
+			segments.get(i).draw();
+		}
 	}
 	
 	/**
@@ -52,8 +66,16 @@ public class Snake {
 	 * @param f the food to be eaten
 	 * @return true if the snake successfully ate the food
 	 */
+	
 	public boolean eatFood(Food f) {
-		//FIXME
+		double dx = segments.get(0).getX() - f.getX();
+		double dy = segments.get(0).getY() - f.getY();
+		if (Math.sqrt(dx*dx + dy*dy) < (1.5 * SEGMENT_SIZE)) {
+			int n = segments.size() - 1;
+			BodySegment newSegment = new BodySegment(segments.get(n).getX(), segments.get(n).getY(), SEGMENT_SIZE);
+			segments.add(newSegment);
+			return true;
+		}
 		return false;
 	}
 	
@@ -62,7 +84,37 @@ public class Snake {
 	 * @return whether or not the head is in the bounds of the window
 	 */
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+		if (segments.get(0).getX() > 1) {
+			return false;
+		}
+		if (segments.get(0).getY() > 1) {
+			return false;
+		}
+		if (segments.get(0).getX() < 0) {
+			return false;
+		}
+		if (segments.get(0).getY() < 0) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
+	
+	public boolean hitSelf() {
+		boolean hitSelf = false;
+		for (int i = 2; i < segments.size(); i++) {
+			double dx = segments.get(0).getX() - segments.get(i).getX();
+			double dy = segments.get(0).getY() - segments.get(i).getY();
+			if (Math.sqrt(dx*dx + dy*dy) < (SEGMENT_SIZE)) {
+				hitSelf = true;
+				return hitSelf;
+			}
+		}
+		
+		return hitSelf;
+	}
+	
 }
+
+	
